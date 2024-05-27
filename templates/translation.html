@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Translation</title>
+
+    <link rel="stylesheet" href="{{url_for('static',filename='css/bootstap.min.css') }}">
+    <script src="{{url_for('static',filename='js/jquery.min.js')}}"> </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <style>
+        .navbar {
+            background-color: #000000;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .navbar-nav .nav-link {
+            color: #ffffff !important;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #ff7f00 !important;
+        }
+
+        #translationForm {
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #sourceText {
+            resize: none;
+            height: 150px;
+        }
+
+        #translateButton {
+            margin-top: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #translateButton:hover {
+            background-color: black;
+        }
+
+        #translatedText {
+            margin-top: 20px;
+            height: 150px;
+            background-color: #f9f9f9;
+            border: 1px solid #0d0d0d;
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 16px;
+            font-family: Arial, sans-serif;
+            color: black;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <h3 style="color: white; font-size:35pxpx;">Translation</h3>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ml-auto">
+
+                <li class="nav-item ">
+                    <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="{{ url_for('training') }}">Training</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                </li>
+
+            </ul>
+        </div>
+    </nav><br>
+
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <form id="translationForm">
+                    <div class="form-group">
+                        <label for="sourceText">Text (English)</label>
+                        <textarea class="form-control" id="sourceText" name="sourceText" rows="4" required></textarea>
+                    </div>
+                    <div class="form-group text-center">
+                        <button type="button" id="translateButton">Translate</button>
+                    </div>
+                </form>
+            </div>
+        </div><br>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="translatedText">Translated Text (Hindi)</label>
+                    <textarea class="form-control" id="translatedText" rows="4" readonly></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('translateButton').addEventListener('click', function () {
+            var sourceText = document.getElementById('sourceText').value;
+
+            var regExp = /[^0-9a-zA-Z\s,.?(){}""''-_]/;
+            if (regExp.test(sourceText)) {
+                alert('Please Enter English Text Only');
+                return;
+            }
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/translate', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    document.getElementById('translatedText').value = response.translated_text;
+                }
+            };
+            xhr.send(JSON.stringify({ sourceText: sourceText }));
+        });
+    </script>
+
+</body>
+
+</html>
